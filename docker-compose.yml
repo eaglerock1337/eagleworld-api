@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  dynamodb-local:
+    command: "-jar DynamoDBLocal.jar -sharedDb -optimizeDbBeforeStartup -dbPath ./data"
+    image: "amazon/dynamodb-local:latest"
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./docker/dynamodb:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
+  app-node:
+    depends_on:
+      - dynamodb-local
+    volumes:
+      - ".:/pasm"
+    working_dir: /pasm
+    build: 
+      context: .
+      dockerfile: Dockerfile.awscli
+    container_name: app-node
+    environment:
+      AWS_ACCESS_KEY_ID: 'jon_is_awesome'
+      AWS_SECRET_ACCESS_KEY: 'jon_is_awesome'
+    command:
+      /pasm/docker-bin/run-tests.sh
