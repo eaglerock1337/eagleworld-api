@@ -4,7 +4,7 @@ import subprocess
 
 def main():
     get_fortune = subprocess.Popen(
-        ["curl", "api.eagleworld.net/fortune"],
+        ["curl", "api.eagleworld.net/api/fortune"],
         stdout=subprocess.PIPE
     )
     fortune = json.loads(get_fortune.stdout.read())
