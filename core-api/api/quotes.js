@@ -4,11 +4,22 @@ const quoteAPI = express.Router();
 const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database('./api.db');
 
-quoteAPI.param('quoteId', (req, res, next, id) => {
-
+quoteAPI.param('quoteId', (req, _res, next, id) => {
+    db.get(`SELECT * FROM Quotes WHERE id = ${id}`, (err, row) => {
+        if (err) {
+            next(err);
+        } else if (!row) {
+            let respErr = new Error('Quote ID not found');
+            respErr.status = 404;
+            next(respErr);
+        } else {
+            req.quote = row;
+            next();
+        }
+    })
 });
 
-quoteAPI.get('/', (req, res, next) => {
+quoteAPI.get('/', (_req, res, next) => {
     db.all('SELECT * FROM Quotes', (err, data) => {
         if (err) {
             next(err);
