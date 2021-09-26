@@ -1,4 +1,4 @@
-VERSION = 0.0.1
+VERSION = 0.1.0
 
 .PHONY: default
 default: help
@@ -16,19 +16,29 @@ restart: stop build run ## ALIAS: stop, build, run
 
 .PHONY: stop
 stop: ## stop the Docker container
-	docker stop eagleworld-core-api
+	docker container stop eagleworld-core-api
 
 .PHONY: build
 build: ## build the bot's Docker image
-	docker build --tag eagleworld-core-api:${VERSION} .
+	docker image build --tag eaglerock/eagleworld-core-api:${VERSION} .
+	docker image tag eaglerock/eagleworld-core-api:${VERSION} eaglerock/eagleworld-core-api:latest
+
+.PHONY: push
+push: ## push the version to Docker hub
+	docker image push eaglerock/eagleworld-core-api:${VERSION}
+
+.PHONY: promote
+promote: ## promote the image to stable
+	docker image tag eaglerock/eagleworld-core-api:${VERSION} eaglerock/eagleworld-core-api:stable
+	docker image push eaglerock/eagleworld-core-api:${VERSION}
 
 .PHONY: run
 run: ## run the bot inside Docker
-	docker run -d -p 4000:4000 --rm --name eagleworld-core-api eagleworld-core-api:${VERSION}
+	docker container run -d -p 4000:4000 --rm --name eagleworld-core-api eaglerock/eagleworld-core-api:${VERSION}
 
 .PHONY: log
 log: ## display the Docker container's logs and save to a logfile
-	docker logs -f eagleworld-core-api | tee eagleworld-core-api.log
+	docker container logs -f eagleworld-core-api | tee eagleworld-core-api.log
 
 # .PHONY: env
 # env: ## set up a local development environment
