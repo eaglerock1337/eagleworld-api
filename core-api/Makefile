@@ -26,6 +26,7 @@ build: ## build the bot's Docker image
 .PHONY: push
 push: ## push the version to Docker hub
 	docker image push eaglerock/eagleworld-core-api:${VERSION}
+	docker image push eaglerock/eagleworld-core-api:latest
 
 .PHONY: promote
 promote: ## promote the image to stable
