@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eagleworld-core-api
+  labels:
+    app: core-api
+    domain: eagleworld.net
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: core-api
+      domain: eagleworld.net
+  template:
+    metadata:
+      labels:
+        app: core-api
+        domain: eagleworld.net
+    spec:
+      containers:
+      - name: eagleworld-core-api
+        image: eaglerock/eagleworld-core-api:stable-arm
+        ports:
+        - containerPort: 4000
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 250m
+          limits:
+            memory: 512Mi
+            cpu: 500m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eagleworld-core-api
+  labels:
+    app: core-api
+    domain: eagleworld.net
+spec:
+  type: NodePort
+  selector:
+    app: core-api
+  ports:
+    - name: core-api
+      protocol: TCP
+      port: 4000
+      targetPort: 4000
+      nodePort: 32400
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: eagleworld-core-api
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: eagleworld-core-api
+            port:
+              number: 4000
